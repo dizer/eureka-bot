@@ -16,7 +16,7 @@ class EurekaBot::Controller::Resolver
     resolved = resolve
     raise ActionNotFound.new("Cant resolve path for #{message}") unless resolved
     controller = resolved[:controller].new(
-        params:   {},
+        params:   resolved[:params] || {},
         message:  message,
         logger:   logger,
         response: response
