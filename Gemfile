@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'activesupport', '>= 5.0.0'
+gem 'sucker_punch', '~> 2.0'
 
 group :development, :test do
   gem 'rspec',       '~> 3.5.0'

@@ -6,6 +6,7 @@ require './lib/eureka-bot'
 require 'webmock/rspec'
 require 'vcr'
 require 'factory_girl'
+require 'sucker_punch/testing/inline'
 
 $:.unshift File.dirname(__FILE__) + '/..'
 Dir['spec/support/**/*.rb'].each { |f| require f }

@@ -6,6 +6,8 @@ require 'active_support/core_ext'
 module EurekaBot
   extend ActiveSupport::Autoload
 
-  autoload :Version
   autoload :Controller
+  autoload :Job
+  autoload :Version
+
 end
