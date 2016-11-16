@@ -1,5 +1,6 @@
 class EurekaBot::Controller
   extend ActiveSupport::Autoload
+  include ActiveSupport::Callbacks
   define_callbacks :action
 
   autoload :Response
