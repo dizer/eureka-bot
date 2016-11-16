@@ -11,3 +11,5 @@ module EurekaBot
   autoload :Version
 
 end
+
+require 'eureka_bot/integrations/new_relic' if defined?(NewRelic)

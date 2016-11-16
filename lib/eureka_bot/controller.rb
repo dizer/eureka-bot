@@ -1,5 +1,6 @@
 class EurekaBot::Controller
   extend ActiveSupport::Autoload
+  define_callbacks :action
 
   autoload :Response
   autoload :Resolver
@@ -16,7 +17,9 @@ class EurekaBot::Controller
 
   def execute(action)
     if respond_to?(action, include_all: false)
-      public_send(action)
+      run_callbacks :action do
+        public_send(action)
+      end
     else
       raise UnknownAction.new("Action #{action} is not defined in #{self.class}")
     end
