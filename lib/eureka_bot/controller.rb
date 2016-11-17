@@ -7,6 +7,7 @@ class EurekaBot::Controller
   autoload :Resolver
 
   attr_reader :params, :message, :logger, :response
+  cattr_accessor :exception_handler
 
   def initialize(params: {}, message: nil, response: nil, logger: Logger.new(STDOUT))
     @params   = params
@@ -33,6 +34,17 @@ class EurekaBot::Controller
 
   def response_class
     EurekaBot::Controller::Response
+  end
+
+  def trace_error(e, params={})
+    logger.error(e)
+    logger.error(e.http_body) if e.respond_to?(:http_body)
+    self.class.exception_handler.call(e, params) if self.class.exception_handler
+  end
+
+  def self.has_action?(action)
+    return false unless action.present?
+    public_instance_methods(false).include?(action.to_sym)
   end
 
   class UnknownAction < StandardError; end
