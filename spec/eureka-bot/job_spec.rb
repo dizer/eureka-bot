@@ -11,7 +11,7 @@ RSpec.describe EurekaBot::Job do
     end
 
     let(:resolver_class) do
-      Class.new(EurekaBot::Controller::Resolver)
+      Class.new(EurekaBot::Resolver)
     end
 
     let(:job_class) do

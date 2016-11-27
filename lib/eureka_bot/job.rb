@@ -4,7 +4,7 @@ class EurekaBot::Job
   include ::SuckerPunch::Job
 
   def perform(resolver_class, message)
-    klass = if resolver_class <= EurekaBot::Controller::Resolver
+    klass = if resolver_class <= EurekaBot::Resolver
               resolver_class
             elsif resolver_class <= String
               resolver_class.constantize

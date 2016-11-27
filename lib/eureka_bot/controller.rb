@@ -4,7 +4,6 @@ class EurekaBot::Controller
   define_callbacks :action
 
   autoload :Response
-  autoload :Resolver
 
   attr_reader :params, :message, :logger, :response
   cattr_accessor :exception_handler
@@ -30,6 +29,16 @@ class EurekaBot::Controller
 
   def answer(params={})
     response << params
+  end
+
+  def redirect(controller, action)
+    instance = controller.new(
+        params:   params,
+        message:  message,
+        response: response,
+        logger:   logger
+    )
+    instance.public_send(action)
   end
 
   def response_class

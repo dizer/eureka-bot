@@ -8,6 +8,7 @@ module EurekaBot
 
   autoload :Controller
   autoload :Job
+  autoload :Resolver
   autoload :Version
 
 end
