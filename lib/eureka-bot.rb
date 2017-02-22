@@ -2,15 +2,35 @@ $:.unshift File.dirname(__FILE__)
 
 require 'active_support'
 require 'active_support/core_ext'
+require 'active_support/concern'
+require 'active_support/notifications'
 
 module EurekaBot
   extend ActiveSupport::Autoload
+  cattr_reader :logger
 
   autoload :Controller
+  autoload :Exceptions
+  autoload :Instrumentation
   autoload :Job
   autoload :Resolver
   autoload :Version
 
+  eager_autoload do
+    autoload :Integration
+    autoload :Notifications
+  end
+
+  include EurekaBot::Exceptions
+
+  def self.logger=(logger)
+    @@logger = logger
+    SuckerPunch.logger = logger
+    logger
+  end
 end
 
-require 'eureka_bot/integrations/new_relic' if defined?(NewRelic)
+EurekaBot.logger       = Logger.new(nil)
+EurekaBot.logger.level = Logger::INFO
+
+EurekaBot.eager_load!

@@ -1,10 +1,12 @@
 class EurekaBot::Resolver
+  include EurekaBot::Instrumentation
+
   class ActionNotFound < StandardError; end
   class ControllerNotFound < StandardError; end
 
   attr_reader :logger, :message, :response, :controller
 
-  def initialize(message:, response: nil, logger: Logger.new(STDOUT))
+  def initialize(message:, response: nil, logger: EurekaBot.logger)
     @logger   = logger
     @message  = message
     @response = response
@@ -23,7 +25,9 @@ class EurekaBot::Resolver
         logger:   logger,
         response: response
     )
-    controller.execute(resolved[:action])
+    instrument 'resolver.execute' do
+      controller.execute(resolved[:action])
+    end
     self
   end
 
@@ -45,17 +49,19 @@ class EurekaBot::Resolver
   end
 
   def resolve_controller(klass)
-    return klass if klass.is_a?(Class) && klass <= EurekaBot::Controller
-    camelized = ActiveSupport::Inflector.camelize(klass)
-    camelized = [camelized, 'Controller'].join unless camelized.include?('Controller')
-    [
-        camelized,
-        [controller_namespace, camelized].join('::')
-    ].each do |variant|
-      constant= ActiveSupport::Inflector.safe_constantize(variant)
-      return constant if constant
+    instrument 'resolver.resolve_controller' do
+      return klass if klass.is_a?(Class) && klass <= EurekaBot::Controller
+      camelized = ActiveSupport::Inflector.camelize(klass)
+      camelized = [camelized, 'Controller'].join unless camelized.include?('Controller')
+      [
+          camelized,
+          [controller_namespace, camelized].join('::')
+      ].each do |variant|
+        constant= ActiveSupport::Inflector.safe_constantize(variant)
+        return constant if constant
+      end
+      raise ControllerNotFound.new(klass)
     end
-    raise ControllerNotFound.new(klass)
   end
 
   def controller_namespace

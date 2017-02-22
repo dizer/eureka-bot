@@ -1,14 +1,16 @@
 class EurekaBot::Controller
   extend ActiveSupport::Autoload
   include ActiveSupport::Callbacks
+  include EurekaBot::Instrumentation
+
   define_callbacks :action
 
   autoload :Response
 
   attr_reader :params, :message, :logger, :response
-  cattr_accessor :exception_handler
+  # cattr_accessor :exception_handler
 
-  def initialize(params: {}, message: nil, response: nil, logger: Logger.new(STDOUT))
+  def initialize(params: {}, message: nil, response: nil, logger: EurekaBot.logger)
     @params   = params
     @message  = message
     @logger   = logger
@@ -18,8 +20,14 @@ class EurekaBot::Controller
 
   def execute(action)
     if respond_to?(action, include_all: false)
-      run_callbacks :action do
-        public_send(action)
+      instrument 'controller.execute' do
+        begin
+          run_callbacks :action do
+            public_send(action)
+          end
+        rescue StandardError => e
+          trace_error(e, {action: action, message: message})
+        end
       end
     else
       raise UnknownAction.new("Action #{action} is not defined in #{self.class}")
@@ -28,7 +36,9 @@ class EurekaBot::Controller
   end
 
   def answer(params={})
-    response << params
+    instrument 'controller.answer', params do
+      response << params
+    end
   end
 
   def redirect(controller, action)
@@ -38,7 +48,9 @@ class EurekaBot::Controller
         response: response,
         logger:   logger
     )
-    instance.public_send(action)
+    instrument 'controller.redirect', {from: self.class.to_s, to: {controller: controller.to_s, action: action}} do
+      instance.public_send(action)
+    end
   end
 
   def response_class
@@ -46,9 +58,8 @@ class EurekaBot::Controller
   end
 
   def trace_error(e, params={})
-    logger.error(e)
     logger.error(e.http_body) if e.respond_to?(:http_body)
-    self.class.exception_handler.call(e, params) if self.class.exception_handler
+    EurekaBot.exception_handler(e, self.class, params)
   end
 
   def self.has_action?(action)

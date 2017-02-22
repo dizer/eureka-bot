@@ -5,7 +5,7 @@ class EurekaBot::Controller::Response
   attr_reader :logger, :data
   attr_accessor :controller
 
-  def initialize(logger: Logger.new(STDOUT))
+  def initialize(logger: EurekaBot.logger)
     @logger = logger
     @data   = []
   end
