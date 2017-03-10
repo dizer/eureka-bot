@@ -4,8 +4,8 @@ require 'bundler'
 Bundler.require
 require './lib/eureka-bot'
 require 'webmock/rspec'
-require 'vcr'
-require 'factory_girl'
+# require 'vcr'
+# require 'factory_girl'
 require 'sucker_punch/testing/inline'
 
 $:.unshift File.dirname(__FILE__) + '/..'
@@ -14,16 +14,16 @@ Dir['spec/support/**/*.rb'].each { |f| require f }
 RSpec.configure do |config|
   config.include WebRequestHelper
   config.include SettingsHelper
-  config.include FactoryGirl::Syntax::Methods
 
-  config.before(:suite) do
-    FactoryGirl.find_definitions
-    lint_time = Benchmark.realtime do
-      factories_for_lint = FactoryGirl.factories.select{|f| f.send(:class_name) != Hash}
-      FactoryGirl.lint(factories_for_lint)
-    end
-    # puts "=== FactoryGirl.lint complete in #{lint_time} seconds ==="
-  end
+  # config.include FactoryGirl::Syntax::Methods
+  # config.before(:suite) do
+  #   FactoryGirl.find_definitions
+  #   lint_time = Benchmark.realtime do
+  #     factories_for_lint = FactoryGirl.factories.select{|f| f.send(:class_name) != Hash}
+  #     FactoryGirl.lint(factories_for_lint)
+  #   end
+  #   # puts "=== FactoryGirl.lint complete in #{lint_time} seconds ==="
+  # end
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -52,10 +52,4 @@ RSpec.configure do |config|
   end
 
   Kernel.srand config.seed
-end
-
-VCR.configure do |c|
-  c.cassette_library_dir = 'spec/cassettes'
-  c.hook_into :webmock
-  c.configure_rspec_metadata!
 end
