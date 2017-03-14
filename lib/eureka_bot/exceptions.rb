@@ -1,5 +1,3 @@
-require 'sucker_punch'
-
 module EurekaBot::Exceptions
   extend ActiveSupport::Concern
 
@@ -28,7 +26,3 @@ module EurekaBot::Exceptions
     end
   end
 end
-
-SuckerPunch.exception_handler = -> (e, klass, args) {
-  EurekaBot.exception_handler(e, klass, args)
-}

@@ -1,30 +1,14 @@
-require 'sucker_punch'
+require 'active_job'
 
-class EurekaBot::Job
-  include ::SuckerPunch::Job
+class EurekaBot::Job < ActiveJob::Base
+  extend ActiveSupport::Autoload
+  autoload :Input
+  autoload :Output
   include EurekaBot::Instrumentation
 
-  def perform(resolver_class, message)
-    instrument 'job.perform' do
-      klass = if resolver_class <= EurekaBot::Resolver
-                resolver_class
-              elsif resolver_class <= String
-                resolver_class.constantize
-              else
-                raise UnknownResolverClass.new(resolver_class)
-              end
-
-      resolver = klass.new(
-          message:  message,
-          logger:   logger
-      )
-      resolver.execute
-    end
+  queue_as do
+    self.class.name.underscore.gsub('/', '__')
   end
 
-  def logger
-    EurekaBot.logger
-  end
-
-  class UnknownResolverClass < StandardError; end
+  self.logger = EurekaBot.logger
 end

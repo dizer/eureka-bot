@@ -25,7 +25,7 @@ module EurekaBot
 
   def self.logger=(logger)
     @@logger = logger
-    SuckerPunch.logger = logger
+    EurekaBot::Job.logger = logger
     logger
   end
 end

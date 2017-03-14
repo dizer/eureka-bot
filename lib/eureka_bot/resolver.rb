@@ -16,8 +16,15 @@ class EurekaBot::Resolver
     nil
   end
 
+  def resolved
+    @resolved ||= begin
+      resolved = resolve
+      logger.info [:resolved, resolved, message]
+      resolved
+    end
+  end
+
   def execute
-    resolved = resolve
     raise ControllerNotFound.new("Can't resolve #{message}") unless resolved
     @controller = resolve_controller(resolved[:controller]).new(
         params:   resolved[:params] || {},

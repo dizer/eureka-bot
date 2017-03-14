@@ -15,9 +15,11 @@ module EurekaBot::Notification
 end
 
 ActiveSupport::Notifications.subscribe /eureka-bot\..*/ do |*args|
-  EurekaBot::Notification.log_notification(::Logger::DEBUG, *args)
+  severity = if args[0] == 'eureka-bot.job.perform'
+               ::Logger::INFO
+             else
+               ::Logger::DEBUG
+             end
+  EurekaBot::Notification.log_notification(severity, *args)
 end
 
-ActiveSupport::Notifications.subscribe 'eureka-bot.job.perform' do |*args|
-  EurekaBot::Notification.log_notification(::Logger::INFO, *args)
-end

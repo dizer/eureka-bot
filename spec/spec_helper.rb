@@ -6,7 +6,8 @@ require './lib/eureka-bot'
 require 'webmock/rspec'
 # require 'vcr'
 # require 'factory_girl'
-require 'sucker_punch/testing/inline'
+# require 'sucker_punch/testing/inline'
+EurekaBot::Job.queue_adapter = :inline
 
 $:.unshift File.dirname(__FILE__) + '/..'
 Dir['spec/support/**/*.rb'].each { |f| require f }

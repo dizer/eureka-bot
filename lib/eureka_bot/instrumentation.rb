@@ -1,7 +1,7 @@
 module EurekaBot::Instrumentation
   extend ActiveSupport::Concern
 
-  def instrument(name, payload=nil, &block)
+  def instrument(name, payload={}, &block)
     self.class.instrument(name, payload, &block)
   end
 
@@ -10,8 +10,15 @@ module EurekaBot::Instrumentation
   end
 
   class_methods do
-    def instrument(name, payload=nil, &block)
-      ActiveSupport::Notifications.instrument [EurekaBot::Instrumentation.prefix, name].compact.join('.'), payload, &block
+    def instrument(name, payload={}, &block)
+      ActiveSupport::Notifications.instrument(
+          [
+              EurekaBot::Instrumentation.prefix,
+              name
+          ].compact.join('.'),
+          payload,
+          &block
+      )
     end
   end
 
