@@ -13,7 +13,9 @@ class EurekaBot::Controller::Response
 
   def add(params={})
     run_callbacks :add do
-      @data << params.merge(eb_order: @order_counter += 1)
+      @data << {
+          order: @order_counter += 1
+      }.merge(params)
     end
   end
 
