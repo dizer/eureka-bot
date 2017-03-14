@@ -8,14 +8,19 @@ class EurekaBot::Controller::Response
   def initialize(logger: EurekaBot.logger)
     @logger = logger
     @data   = []
-    @order_counter = 0
+    @order_counters = {}
   end
 
   def add(params={})
     run_callbacks :add do
-      @data << {
-          order: @order_counter += 1
-      }.merge(params)
+      if params[:order_queue]
+        @order_counters[params[:order_queue]] = (@order_counters[params[:order_queue]] || 0) + 1
+        @data << {
+            order: @order_counters[params[:order_queue]]
+        }.merge(params)
+      else
+        @data << params
+      end
     end
   end
 
