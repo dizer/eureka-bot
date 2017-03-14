@@ -8,11 +8,12 @@ class EurekaBot::Controller::Response
   def initialize(logger: EurekaBot.logger)
     @logger = logger
     @data   = []
+    @order_counter = 0
   end
 
   def add(params={})
     run_callbacks :add do
-      @data << params
+      @data << params.merge(eb_order: @order_counter += 1)
     end
   end
 
