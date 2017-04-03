@@ -21,12 +21,8 @@ class EurekaBot::Controller
   def execute(action)
     if respond_to?(action, include_all: false)
       instrument 'controller.execute' do
-        begin
-          run_callbacks :action do
-            public_send(action)
-          end
-        rescue StandardError => e
-          trace_error(e, {action: action, message: message})
+        run_callbacks :action do
+          public_send(action)
         end
       end
     else

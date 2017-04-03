@@ -27,6 +27,31 @@ RSpec.describe EurekaBot::Resolver do
     end
   end
 
+  context '#exception' do
+    let(:controller_class) do
+      Class.new(EurekaBot::Controller) do
+        def some_action
+          raise StandardError.new
+        end
+      end
+    end
+
+    let(:resolver) do
+      Class.new(EurekaBot::Resolver).new(message: {})
+    end
+
+    before do
+      allow(resolver).to receive(:resolve).and_return(
+          controller: controller_class,
+          action:     :some_action
+      )
+    end
+
+    it do
+      expect{resolver.execute}.to raise_error(StandardError)
+    end
+  end
+
   context 'namespace' do
     let(:controller_class) do
       Class.new(EurekaBot::Controller) do

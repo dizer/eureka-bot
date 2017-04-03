@@ -8,6 +8,8 @@ require 'webmock/rspec'
 # require 'factory_girl'
 # require 'sucker_punch/testing/inline'
 EurekaBot::Job.queue_adapter = :inline
+# EurekaBot.logger       = Logger.new(STDOUT)
+# EurekaBot.logger.level = Logger::DEBUG
 
 $:.unshift File.dirname(__FILE__) + '/..'
 Dir['spec/support/**/*.rb'].each { |f| require f }

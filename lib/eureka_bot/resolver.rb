@@ -19,7 +19,7 @@ class EurekaBot::Resolver
   def resolved
     @resolved ||= begin
       resolved = resolve
-      logger.info [:resolved, resolved, message]
+      instrument 'resolver.resolved', result: resolved, message: message
       resolved
     end
   end

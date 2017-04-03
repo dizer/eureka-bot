@@ -38,15 +38,43 @@ RSpec.describe EurekaBot::Job do
           controller: controller_class,
           action:     :some_action
       )
-
-      job_class.perform_later(resolver_class.to_s, {})
     end
 
-    it do
-      expect($job_result).to be
-      expect(
-          $job_result.controller.response.to_a
-      ).to include(include(some_action: 'finished'))
+    context 'results' do
+      before do
+        job_class.perform_later(resolver_class.to_s, {})
+      end
+
+      it do
+        expect($job_result).to be
+        expect(
+            $job_result.controller.response.to_a
+        ).to include(include(some_action: 'finished'))
+      end
     end
+
+    context 'exceptions' do
+      let(:controller_class) do
+        class TestController < EurekaBot::Controller
+          def some_action
+            raise StandardError.new('test action error')
+          end
+        end
+        TestController
+      end
+      it do
+        $result = nil
+        EurekaBot.add_exception_handler do |e|
+          $result = e.message
+        end
+        expect{
+          job_class.perform_later(resolver_class.to_s, {})
+        }.to change{$result}.from(nil).to('test action error')
+      end
+    end
+
+
+
+
   end
 end
