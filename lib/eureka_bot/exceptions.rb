@@ -10,7 +10,7 @@ module EurekaBot::Exceptions
 
     def self.exception_handler(e, klass, args)
       self.exception_chain.each do |handler|
-        handler.call(e, klass, args)
+        handler.call(e, klass, args) rescue nil
       end
     end
 
