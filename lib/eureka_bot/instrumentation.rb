@@ -1,8 +1,8 @@
 module EurekaBot::Instrumentation
   extend ActiveSupport::Concern
 
-  def instrument(name, payload={}, &block)
-    self.class.instrument(name, payload, &block)
+  def instrument(name, level: Logger::DEBUG, **payload, &block)
+    self.class.instrument(name, level: level, **payload, &block)
   end
 
   def self.prefix
@@ -10,13 +10,13 @@ module EurekaBot::Instrumentation
   end
 
   class_methods do
-    def instrument(name, payload={}, &block)
+    def instrument(name, level: Logger::DEBUG, **payload, &block)
       ActiveSupport::Notifications.instrument(
           [
               EurekaBot::Instrumentation.prefix,
               name
           ].compact.join('.'),
-          payload,
+          {level: level}.merge(payload),
           &block
       )
     end
