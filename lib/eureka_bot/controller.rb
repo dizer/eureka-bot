@@ -31,9 +31,10 @@ class EurekaBot::Controller
     self
   end
 
-  def answer(params={})
+  def answer(**params)
     instrument 'controller.answer', params do
       response << params
+      nil
     end
   end
 

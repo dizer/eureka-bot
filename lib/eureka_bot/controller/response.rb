@@ -11,7 +11,7 @@ class EurekaBot::Controller::Response
     @order_counters = {}
   end
 
-  def add(params={})
+  def add(**params)
     run_callbacks :add do
       if params[:order_queue]
         @order_counters[params[:order_queue]] = (@order_counters[params[:order_queue]] || 0) + 1
