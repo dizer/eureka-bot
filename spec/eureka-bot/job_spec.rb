@@ -72,9 +72,5 @@ RSpec.describe EurekaBot::Job do
         }.to change{$result}.from(nil).to('test action error')
       end
     end
-
-
-
-
   end
 end

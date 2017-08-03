@@ -14,6 +14,7 @@ module EurekaBot
   autoload :Instrumentation
   autoload :Job
   autoload :Resolver
+  autoload :Sender
   autoload :Version
 
   eager_autoload do

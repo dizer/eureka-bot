@@ -11,15 +11,18 @@ class EurekaBot::Controller::Response
     @order_counters = {}
   end
 
-  def add(**params)
+  def add(sync: false, **params)
     run_callbacks :add do
-      if params[:order_queue]
-        @order_counters[params[:order_queue]] = (@order_counters[params[:order_queue]] || 0) + 1
-        @data << {
-            order: @order_counters[params[:order_queue]]
-        }.merge(params)
+      message = params
+      if message[:order_queue]
+        @order_counters[message[:order_queue]] = (@order_counters[message[:order_queue]] || 0) + 1
+        message = {order: @order_counters[message[:order_queue]]}.merge(message)
+      end
+      if sync
+        self.class.sender_class.new.deliver(message)
       else
-        @data << params
+        @data << message
+        nil
       end
     end
   end
@@ -30,6 +33,10 @@ class EurekaBot::Controller::Response
 
   def to_a
     data
+  end
+
+  def self.sender_class
+    @@sender_class ||= EurekaBot::Sender
   end
 
 end

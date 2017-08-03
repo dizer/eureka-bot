@@ -5,12 +5,14 @@ RSpec.describe EurekaBot::Instrumentation do
     let(:resolver) { EurekaBot::Resolver.new(message: {}) }
     it do
       payloads = []
-      ActiveSupport::Notifications.subscribe /.*/ do |name, started, finished, id, payload|
+      subscriber = ActiveSupport::Notifications.subscribe /.*/ do |name, started, finished, id, payload|
         expect(payload).to include(:level)
         payloads << payload
       end
 
       expect{resolver.resolved}.to change{payloads.length}.from(0).to(1)
+
+      ActiveSupport::Notifications.unsubscribe(subscriber)
     end
   end
 end
