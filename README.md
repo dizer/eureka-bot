@@ -1,1 +1,2 @@
-# Eureka Bot gem
+# Eureka Bot framework
+
